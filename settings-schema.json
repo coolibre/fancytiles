@@ -56,7 +56,7 @@
     "type": "switch",
     "description": "Automatically start snapping when dragging",
     "tooltip": "When enabled, snapping activates immediately when a window drag begins. You can still toggle it off with the modifier key or secondary mouse button.",
-    "default": false
+    "default": true
   },
   "overlayColor": {
     "type": "colorchooser",

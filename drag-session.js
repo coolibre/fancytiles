@@ -103,6 +103,7 @@ class DragSession {
             o.mergingRadius,
             o.activateWithNonPrimaryButton,
             o.autoStartSnapping,
+            o.overlayColor,
         );
     }
 

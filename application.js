@@ -394,6 +394,7 @@ class Application {
             mergingRadius: s.mergingRadius.value,
             activateWithNonPrimaryButton: s.activateWithNonPrimaryButton.value,
             autoStartSnapping: s.autoStartSnapping.value,
+            overlayColor: s.overlayColor.value,
         };
     }
 }

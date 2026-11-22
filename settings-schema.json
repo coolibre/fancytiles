@@ -29,6 +29,12 @@
     "tooltip": "When enabled, snapping activates immediately when a window drag begins. You can still toggle it off with the modifier key or secondary mouse button.",
     "default": false
   },
+  "overlayColor": {
+    "type": "colorchooser",
+    "default": "rgb(255,179,102)",
+    "description": "Color of the snapping regions",
+    "tooltip": "The region under the mouse is drawn with a translucent fill and a solid border in this color"
+  },
   "enableMultiSnappingModifiers": {
     "type": "combobox",
     "description": "Key modifier to enable merging additional regions",

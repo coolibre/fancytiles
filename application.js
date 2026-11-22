@@ -8,6 +8,7 @@ const St = imports.gi.St;
 const { DefaultColors } = require('./drawing');
 const { DragSession } = require('./drag-session');
 const { GridEditor } = require('./grid-editor');
+const { getUsableScreenArea, snapToRect } = require('./window-utils');
 const { LayoutIO } = require('./io-utils');
 const { LayoutNode } = require('./node_tree');
 
@@ -65,6 +66,42 @@ function getFocusedDisplay() {
     return focusWindow.get_monitor();
 }
 
+// hotkey settings that move the focused window to the neighbouring
+// region in a direction, as [dx, dy]
+const DirectionHotkeys = {
+    snapLeftHotkey: [-1, 0],
+    snapRightHotkey: [1, 0],
+    snapUpHotkey: [0, -1],
+    snapDownHotkey: [0, 1],
+};
+
+// hotkey settings that move the focused window to region 1..9
+const ZoneHotkeys = Array.from({ length: 9 }, (_, i) => `snapZone${i + 1}Hotkey`);
+
+const SnapHotkeySettings = [...Object.keys(DirectionHotkeys), ...ZoneHotkeys];
+
+// find the nearest region from the window in the direction (dx, dy).
+// regions that overlap the window on the other axis are preferred, so
+// moving left stays in the same row when possible.
+function findRegionInDirection(regions, frame, dx, dy) {
+    const center = (r) => [r.x + r.width / 2, r.y + r.height / 2];
+    const [wx, wy] = center(frame);
+
+    // distance along the direction of travel and across it
+    const along = (r) => { const [x, y] = center(r); return (x - wx) * dx + (y - wy) * dy; };
+    const across = (r) => { const [x, y] = center(r); return Math.abs((x - wx) * dy + (y - wy) * dx); };
+    const overlapsAcross = (r) => dx !== 0
+        ? r.y < frame.y + frame.height && r.y + r.height > frame.y
+        : r.x < frame.x + frame.width && r.x + r.width > frame.x;
+
+    let candidates = regions.filter(r => along(r) > 1);
+    const overlapping = candidates.filter(overlapsAcross);
+    if (overlapping.length > 0) candidates = overlapping;
+
+    candidates.sort((a, b) => along(a) - along(b) || across(a) - across(b));
+    return candidates[0] || null;
+}
+
 function mapModifierSettingToModifierType(modifierSetting) {
     switch(modifierSetting) {
         case 'CTRL':
@@ -109,6 +146,9 @@ class Application {
 
         this.#settings = new Settings.ExtensionSettings(this, uuid);
         this.#settings.bindProperty(Settings.BindingDirection.IN, 'hotkey', 'hotkey', this.#enableHotkey);
+        for (const key of SnapHotkeySettings) {
+            this.#settings.bindProperty(Settings.BindingDirection.IN, key, key, this.#enableHotkey);
+        }
 
         this.#loadThemeColors();
         this.#enableHotkey();
@@ -178,11 +218,53 @@ class Application {
 
     #disableHotkey() {
         Main.keybindingManager.removeHotKey('fancytiles');
+        for (const key of SnapHotkeySettings) {
+            Main.keybindingManager.removeHotKey(`fancytiles-${key}`);
+        }
     }
 
     #enableHotkey() {
         this.#disableHotkey();
-        Main.keybindingManager.addHotKey('fancytiles', this.#settings.settingsData.hotkey.value, this.#toggleEditor.bind(this));
+        const s = this.#settings.settingsData;
+        Main.keybindingManager.addHotKey('fancytiles', s.hotkey.value, this.#toggleEditor.bind(this));
+
+        for (const [key, [dx, dy]] of Object.entries(DirectionHotkeys)) {
+            Main.keybindingManager.addHotKey(`fancytiles-${key}`, s[key].value,
+                () => this.#snapFocusedWindow((regions, frame) => findRegionInDirection(regions, frame, dx, dy)));
+        }
+
+        ZoneHotkeys.forEach((key, idx) => {
+            Main.keybindingManager.addHotKey(`fancytiles-${key}`, s[key].value,
+                () => this.#snapFocusedWindow((regions) => regions[idx]));
+        });
+    }
+
+    // snap the focused window to the region picked by selectRegion, which
+    // receives the regions of the window's display in reading order
+    // (top to bottom, left to right) and the window's frame rect
+    #snapFocusedWindow(selectRegion) {
+        if (this.#gridEditor) return;
+
+        const window = global.display.focus_window;
+        if (!window || window.window_type !== Meta.WindowType.NORMAL) return;
+
+        const displayIdx = window.get_monitor();
+        const workArea = getUsableScreenArea(displayIdx);
+        if (!workArea) return;
+
+        const layout = this.#readOrCreateLayoutForDisplay(displayIdx);
+        layout.calculateRects(workArea.x, workArea.y, workArea.width, workArea.height);
+        const regions = layout.findAllNodes(n => n.isLeaf())
+            .map(n => n.snapRect())
+            .sort((a, b) => a.y - b.y || a.x - b.x);
+
+        const rect = selectRegion(regions, window.get_frame_rect());
+        if (!rect) return;
+
+        if (window.get_maximized()) {
+            window.unmaximize(Meta.MaximizeFlags.BOTH);
+        }
+        snapToRect(window, rect);
     }
 
     #saveLayouts() {

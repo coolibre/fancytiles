@@ -30,6 +30,19 @@ If you want to make the snapping region even larger you can hold the `<ALT>` key
 
 ![Layout editor](docs/window-snapping.png)
 
+## Snapping with the keyboard
+
+The focused window can also be snapped without the mouse:
+
+| Hotkey | Action |
+|---|---|
+| `<ALT>+Left/Right/Up/Down` | Snap to the neighbouring region in that direction |
+| `<ALT>+1` … `<ALT>+9` | Snap to region 1 … 9 |
+
+Regions are numbered in reading order: top to bottom, then left to right. In a layout of three columns, `<ALT>+1`, `<ALT>+2` and `<ALT>+3` are the left, middle and right column.
+
+Maximized windows are unmaximized first. The hotkeys can be changed in the extension settings.
+
 ## Loading and saving presets
 
 There are 8 slots to hold layout presets. Presets 4-8 are read only _system presets_ and 1-4 are your _user presets_. When the layout editor is opened, press `<SPACE>` to view the presets, and click the preset you want to load. Similarly, press the `<ALT>` key to open the save preset dialog and select one of the four user slots that you want to save the current layout to.

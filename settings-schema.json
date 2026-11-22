@@ -4,6 +4,35 @@
     "default": "<Super>g",
     "description": "Global Hotkey to open the Fancy Tiles layout editor"
   },
+  "snapLeftHotkey": {
+    "type": "keybinding",
+    "default": "<Alt>Left",
+    "description": "Move the focused window to the region on the left"
+  },
+  "snapRightHotkey": {
+    "type": "keybinding",
+    "default": "<Alt>Right",
+    "description": "Move the focused window to the region on the right"
+  },
+  "snapUpHotkey": {
+    "type": "keybinding",
+    "default": "<Alt>Up",
+    "description": "Move the focused window to the region above"
+  },
+  "snapDownHotkey": {
+    "type": "keybinding",
+    "default": "<Alt>Down",
+    "description": "Move the focused window to the region below"
+  },
+  "snapZone1Hotkey": { "type": "keybinding", "default": "<Alt>1", "description": "Move the focused window to region 1" },
+  "snapZone2Hotkey": { "type": "keybinding", "default": "<Alt>2", "description": "Move the focused window to region 2" },
+  "snapZone3Hotkey": { "type": "keybinding", "default": "<Alt>3", "description": "Move the focused window to region 3" },
+  "snapZone4Hotkey": { "type": "keybinding", "default": "<Alt>4", "description": "Move the focused window to region 4" },
+  "snapZone5Hotkey": { "type": "keybinding", "default": "<Alt>5", "description": "Move the focused window to region 5" },
+  "snapZone6Hotkey": { "type": "keybinding", "default": "<Alt>6", "description": "Move the focused window to region 6" },
+  "snapZone7Hotkey": { "type": "keybinding", "default": "<Alt>7", "description": "Move the focused window to region 7" },
+  "snapZone8Hotkey": { "type": "keybinding", "default": "<Alt>8", "description": "Move the focused window to region 8" },
+  "snapZone9Hotkey": { "type": "keybinding", "default": "<Alt>9", "description": "Move the focused window to region 9" },
   "enableSnappingModifiers": {
     "type": "combobox",
     "description": "Key modifier to toggle snapping",

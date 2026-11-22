@@ -36,12 +36,18 @@ The focused window can also be snapped without the mouse:
 
 | Hotkey | Action |
 |---|---|
-| `<ALT>+Left/Right/Up/Down` | Snap to the neighbouring region in that direction |
-| `<ALT>+1` … `<ALT>+9` | Snap to region 1 … 9 |
+| `<SUPER>+Left/Right/Up/Down` | Snap to the neighbouring region in that direction |
+| `<SUPER>+1` … `<SUPER>+9` | Snap to region 1 … 9 |
 
-Regions are numbered in reading order: top to bottom, then left to right. In a layout of three columns, `<ALT>+1`, `<ALT>+2` and `<ALT>+3` are the left, middle and right column.
+Regions are numbered in reading order: top to bottom, then left to right. In a layout of three columns, `<SUPER>+1`, `<SUPER>+2` and `<SUPER>+3` are the left, middle and right column.
 
 Maximized windows are unmaximized first. The hotkeys can be changed in the extension settings.
+
+Cinnamon binds `<SUPER>+Left/Right/Up/Down` to its own tiling by default. Remove those bindings (System Settings → Keyboard → Shortcuts → Windows → Positioning, or the command below) so the arrow hotkeys reach Fancy Tiles:
+
+```bash
+for d in left right up down; do gsettings set org.cinnamon.desktop.keybindings.wm push-tile-$d "[]"; done
+```
 
 ## Loading and saving presets
 
